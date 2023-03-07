@@ -8,6 +8,7 @@
 
 require_once("database.php");
 
+
 /**
  * retourne toute la table monstre
  *
@@ -21,25 +22,6 @@ function lireTousLesUtils()
     $statement = dbRun($sql, $param);
     return $statement->fetchAll(PDO::FETCH_OBJ);
 }
-
-/**
- * retourne un seul monstre selon l'id
- *
- * @param int $id
- * @return object Tableau d'un monstre
- */
-function lireMonstreId($id)
-{
-    $sql = "SELECT id, nom, gentil, nbDents
-              FROM monstres
-             WHERE id = ?";
-    $param = [
-        $id
-    ];
-    $statement = dbRun($sql, $param);
-    return $statement->fetch(PDO::FETCH_OBJ);
-}
-
 
 /**
  * Ajoute un utilisateur dans la base de donnée 
@@ -62,17 +44,36 @@ function ajouterUtil($nom,$email,$mdp)
     $statement = dbRun($sql, $param);
     return $statement;
 }
-
-/**
- * Efface un élément de la base de donné selon l'id
- *
- * @param int $id
- * @return void
- */
-function effacerMonstre($id)
+function lireId()
 {
-    $sql = "DELETE FROM monstres WHERE id=?";
+    $sql = "SELECT idPost 
+    FROM post
+    ORDER BY idPost DESC
+    LIMIT 1";
+    $param = [      
+    ];
+    $statement = dbRun($sql, $param);
+    return $statement->fetch(PDO::FETCH_OBJ);
+}
+
+function ajouterUnePublication($nom)
+{
+
+    $sql = "INSERT INTO post(commentaire)
+            VALUES (?)";
     $param = [
+        $nom,
+    ];
+    $statement = dbRun($sql, $param);
+    return $statement;
+}
+function ajouterUneImage($type,$nom,$id)
+{
+    $sql = "INSERT INTO media(TypeMedia, nomFichierMedia,idPost)
+            VALUES (?,?,?)";
+    $param = [
+        $type,
+        $nom,
         $id
     ];
     $statement = dbRun($sql, $param);
@@ -80,24 +81,42 @@ function effacerMonstre($id)
 }
 
 
-/**
- * Modifier un élément avec les donné de l'utilisateur selon l'id
- *
- * @param string $nom
- * @param int $gentil
- * @param int $nbDents
- * @param int $id
- * @return void
- */
-function modifierMonstre($nom,$gentil,$nbDents,$id)
+function afficherTousLesPosts()
 {
-    $sql = "UPDATE monstres SET nom = ?, gentil = ? , nbDents = ? WHERE id = ?";
+
+    $sql = "SELECT * from produits";
+    $param = [];
+    $statement = dbRun($sql, $param);
+    return $statement->fetchAll(PDO::FETCH_OBJ);
+}
+
+
+function afficherLesImagesParId($idPost)
+{
+
+    $sql = "SELECT * from produits where idProduit = ?";
     $param = [
-        $nom,
-        $gentil,
-        $nbDents,
-        $id
+        $idPost,
     ];
     $statement = dbRun($sql, $param);
-    return $statement;
+    return $statement->fetchAll(PDO::FETCH_OBJ);
+}
+function afficherLeProduitParId($idPost)
+{
+
+    $sql = "SELECT * from produits where idProduit = ?";
+    $param = [
+        $idPost,
+    ];
+    $statement = dbRun($sql, $param);
+    return $statement->fetch(PDO::FETCH_ASSOC);
+}
+
+function SelectProductLike($search){
+    $sql = "SELECT * FROM produits WHERE nomProduit LIKE ?";
+    $param = [
+        "%$search%",        
+    ];
+
+    return dbRun($sql, $param)->fetchAll(PDO::FETCH_OBJ);
 }
